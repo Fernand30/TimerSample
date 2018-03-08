@@ -1,4 +1,7 @@
 {
-  "name": "timerSample",
-  "displayName": "timerSample"
+	"expo": {
+	  "name": "timerSample",
+	  "slug": "timerSample",
+	  "sdkVersion": "25.0.0",
+	}
 }

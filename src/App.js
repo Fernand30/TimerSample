@@ -14,8 +14,10 @@ import {
   TouchableOpacity
 } from 'react-native';
 import beep from './beep.mp3';
+import 'expo'
+//import {default as Sound} from 'react-native-sound'
+const Sound = new Expo.Audio.Sound();
 
-const Sound = require('react-native-sound');
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -36,18 +38,25 @@ export default class App extends Component<Props> {
     clearInterval(timer); 
   }
 
-  showMsg() {
+  async showMsg() {
     
-    const s = new Sound(beep, (error) => { // works
-      if (error) {
-        alert(JSON.stringify(error));
-        return;
-      }
+    // const s = new Sound(beep, (error) => { // works
+    //   if (error) {
+    //     alert(JSON.stringify(error));
+    //     return;
+    //   }
       
-      s.play(() => {
-        s.release()
-      });
-    });
+    //   s.play(() => {
+    //     s.release()
+    //   });
+    // });
+    try {
+        await Sound.loadAsync(require('./beep.mp3'));
+        await Sound.playAsync();
+        // Your sound is playing!
+      } catch (error) {
+        // An error occurred!
+      }
   }
 
   start(){
@@ -97,9 +106,9 @@ export default class App extends Component<Props> {
       <View style={styles.container}>
         <Text style={{fontSize: 20, fontWeight: '700', textAlign:'center'}}> Timer</Text>
         <View style={styles.rowView1}>
-          <TextInput onChangeText={(text)=>this.setState({ minute: text})} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.minute}/>
+          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.setState({ minute: text})} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.minute}/>
           <Text style={{fontSize: 30, marginBottom: 10}}>:</Text>
-          <TextInput onChangeText={(text)=>this.setState({ second: text})} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.second}/>
+          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.setState({ second: text})} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.second}/>
         </View>
         <View style={styles.rowView}>
           <TouchableOpacity onPress={this.start.bind(this)} style={styles.button}>
