@@ -11,14 +11,16 @@ import {
   Text,
   View,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions
 } from 'react-native';
 import beep from './beep.mp3';
 import 'expo'
 //import {default as Sound} from 'react-native-sound'
 const Sound = new Expo.Audio.Sound();
-
-
+var {height, width} = Dimensions.get('window');
+var ttt = 0;
+var ttt1 = 0;
 type Props = {};
 export default class App extends Component<Props> {
   constructor(props){
@@ -26,7 +28,10 @@ export default class App extends Component<Props> {
     this.state=({
       minute: '25',
       second: '00',
-      showMsg: false
+      minute1: '5',
+      second1: '00',
+      showMsg: false,
+      isrun: false
     })
   }
 
@@ -50,6 +55,7 @@ export default class App extends Component<Props> {
     //     s.release()
     //   });
     // });
+    
     try {
         await Sound.loadAsync(require('./beep.mp3'));
         await Sound.playAsync();
@@ -60,12 +66,14 @@ export default class App extends Component<Props> {
   }
 
   start(){
+     //this.setState({ isrun: true})
      ttt = setInterval(() => {
       sec = this.state.second;
       min = this.state.minute;
       if(this.state.second=='00' && this.state.minute=='00'){
         clearInterval(ttt); 
         this.showMsg()
+        this.start1()
       }else{
         if(sec == '00'){
           sec = '60'
@@ -88,27 +96,82 @@ export default class App extends Component<Props> {
 
   }
 
+  start1(){
+     //this.setState({ isrun: true})
+     ttt = setInterval(() => {
+      sec1 = this.state.second1;
+      min1 = this.state.minute1;
+      if(this.state.second1=='00' && this.state.minute1=='00'){
+        clearInterval(ttt); 
+        this.showMsg()
+      }else{
+        if(sec1 == '00'){
+          sec1 = '60'
+          resetMinute1 = Number(min1)-1
+          if(resetMinute1<10) strMinute1 = '0'+String(resetMinute1)
+          else strMinute1 = String(resetMinute1)
+          this.setState({
+            minute1: strMinute1
+          })
+        }
+
+        resetSecond1 = Number(sec1)-1
+        if(resetSecond1<10) strSecond1 = '0'+String(resetSecond1)
+        else strSecond1 = String(resetSecond1)
+        this.setState({
+          second1: strSecond1
+        })
+      }
+    }, 1000);
+
+  }
+
   stop(){
      clearInterval(ttt); 
+     clearInterval(ttt1); 
   }
 
   reset(){
      clearInterval(ttt); 
+     clearInterval(ttt1); 
      this.setState({
       minute :'25',
-      second: '00'
+      second: '00',
+      minute1 :'5',
+      second1: '00'
      })
+  }
+
+  changeSet(text,item){
+    // if(Number(text)<10) realText = '0'+text;
+    // else realText = text
+    if(item=='min'){
+      this.setState({ minute: text})
+    }else if(item=='sec'){
+      this.setState({ second: text})
+    }else if(item=='min1'){
+      this.setState({ minute1: text})
+    }else if(item=='sec1'){
+      this.setState({ second1: text})
+    }
   }
 
   render() {
    
     return (
       <View style={styles.container}>
-        <Text style={{fontSize: 20, fontWeight: '700', textAlign:'center'}}> Timer</Text>
+        <Text style={{fontSize: 20, fontWeight: '700', textAlign:'center'}}>Pomodoro Timer</Text>
+        <Text style={{ textAlign:'center',marginTop: 10,}}>Work Time</Text>
         <View style={styles.rowView1}>
-          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.setState({ minute: text})} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.minute}/>
+          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.changeSet(text,'min')} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.minute}/>
           <Text style={{fontSize: 30, marginBottom: 10}}>:</Text>
-          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.setState({ second: text})} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.second}/>
+          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.changeSet(text,'sec')} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.second}/>
+        </View>
+        <Text style={{ textAlign:'center',marginTop: 10,}}>Break Time</Text>
+        <View style={styles.rowView1}>
+          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.changeSet(text,'min1')} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.minute1}/>
+          <Text style={{fontSize: 30, marginBottom: 10}}>:</Text>
+          <TextInput underlineColorAndroid='transparent' onChangeText={(text)=>this.changeSet(text,'sec1')} keyboardType="number-pad" returnKeyType='done' style={styles.textinput} value={this.state.second1}/>
         </View>
         <View style={styles.rowView}>
           <TouchableOpacity onPress={this.start.bind(this)} style={styles.button}>
@@ -144,20 +207,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems:'center',
     justifyContent:'space-between',
-    marginTop: 20,
+    
     marginHorizontal: 80,
   },
   textinput:{
-    height: 40,
+    height: height/20,
     backgroundColor: '#43ba8f',
-    width: 100,
+    width: width/4,
     textAlign:'center',
     color: 'white',
     fontSize: 20
   },
   button:{
-    width: 80,
-    height: 30,
+    width: width/4,
+    height: height/20,
     alignItems:'center',
     justifyContent:'center',
     backgroundColor: '#76aba5'
